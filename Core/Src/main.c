@@ -22,7 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_cdc_if.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,6 +91,12 @@ int main(void)
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+  uint8_t reg = 0x18<<1;
+  uint8_t data = 0;
+
+  char* text[100] = {0};
+  sprintf(text, "Init\n\r");
+  CDC_Transmit_FS(text, sizeof(text));
 
   /* USER CODE END 2 */
 
@@ -97,6 +104,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	HAL_I2C_IsDeviceReady(&hi2c1, reg, 10, 100);
+	HAL_StatusTypeDef stat = HAL_I2C_Mem_Read(&hi2c1, (reg+1), 0x28, 1, &data, 1, 100);
+	sprintf(text, "%X == %X\n\r, stat, data);
+	CDC_Transmit_FS(text, sizeof(text));
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
