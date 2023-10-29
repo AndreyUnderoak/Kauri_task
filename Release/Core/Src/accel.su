@@ -1,4 +1,3 @@
 ../Core/Src/accel.c:20:16:platform_read	24	static
 ../Core/Src/accel.c:10:16:platform_write	24	static
-../Core/Src/accel.c:30:5:accel_init	24	static
-../Core/Src/accel.c:58:6:accel_get_data	40	static
+../Core/Src/accel.c:31:6:lis331dlh_read_data_polling	48	static
