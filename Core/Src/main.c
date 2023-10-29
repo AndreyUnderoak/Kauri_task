@@ -104,7 +104,7 @@ int main(void)
 	  float data[3] = {0};
 	  if(!accel_get_data(data)){
 		  sprintf(text,
-				  "Acceleration [mg]:%4.2f\t%4.2f\t%4.2f\r\n",
+				  "x: %4.2f  y: %4.2f  z: %4.2f \r\n",
 				  data[0], data[1], data[2]);
 		  CDC_Transmit_FS(text, sizeof(text));
 	  }
