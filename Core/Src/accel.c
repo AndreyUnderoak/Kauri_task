@@ -3,7 +3,6 @@
 static int16_t data_raw_acceleration[3];
 static float acceleration_mg[3];
 static uint8_t whoamI;
-static uint8_t tx_buffer[1000];
 static stmdev_ctx_t dev_ctx;
 
 
@@ -59,29 +58,27 @@ void accel_init(I2C_HandleTypeDef * i2c_device){
 
 }
 
-void accel_get_data(void)
+int accel_get_data(float * data)
 {
   /* Read samples in polling mode (no int) */
-  while (1) {
-    /* Read output only if new value is available */
-    lis331dlh_reg_t reg;
-    lis331dlh_status_reg_get(&dev_ctx, &reg.status_reg);
+  /* Read output only if new value is available */
+  lis331dlh_reg_t reg;
+  lis331dlh_status_reg_get(&dev_ctx, &reg.status_reg);
+  if(!reg.status_reg.zyxda)
+	  return -1;
 
-    if (reg.status_reg.zyxda) {
-      /* Read acceleration data */
-      memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
-      lis331dlh_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
-      acceleration_mg[0] =
-        lis331dlh_from_fs2_to_mg(data_raw_acceleration[0]);
-      acceleration_mg[1] =
-        lis331dlh_from_fs2_to_mg(data_raw_acceleration[1]);
-      acceleration_mg[2] =
-        lis331dlh_from_fs2_to_mg(data_raw_acceleration[2]);
-      sprintf((char *)tx_buffer,
-              "Acceleration [mg]:%4.2f\t%4.2f\t%4.2f\r\n",
-              acceleration_mg[0], acceleration_mg[1], acceleration_mg[2]);
-      CDC_Transmit_FS(tx_buffer, sizeof(tx_buffer));
-    }
-  }
+  /* Read acceleration data */
+  memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
+  lis331dlh_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
+  acceleration_mg[0] =
+		  lis331dlh_from_fs2_to_mg(data_raw_acceleration[0]);
+  acceleration_mg[1] =
+	lis331dlh_from_fs2_to_mg(data_raw_acceleration[1]);
+  acceleration_mg[2] =
+	lis331dlh_from_fs2_to_mg(data_raw_acceleration[2]);
+
+  for(size_t i = 0; i < 3; i++)
+	  data[i] = acceleration_mg[i];
+  return 0;
 }
 

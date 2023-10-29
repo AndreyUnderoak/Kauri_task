@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "string.h"
+#include "usbd_cdc_if.h"
 #include "accel.h"
 /* USER CODE END Includes */
 
@@ -91,6 +92,8 @@ int main(void)
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+
+  char text[100] = {0};
   accel_init(&hi2c1);
   /* USER CODE END 2 */
 
@@ -98,9 +101,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  accel_get_data();
-
-    /* USER CODE END WHILE */
+	  float data[3] = {0};
+	  if(!accel_get_data(data)){
+		  sprintf(text,
+				  "Acceleration [mg]:%4.2f\t%4.2f\t%4.2f\r\n",
+				  data[0], data[1], data[2]);
+		  CDC_Transmit_FS(text, sizeof(text));
+	  }
+	/* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
