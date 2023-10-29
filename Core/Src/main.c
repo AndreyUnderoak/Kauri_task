@@ -93,7 +93,10 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
+  //text buffer
   char text[100] = {0};
+
+  //init of sensor
   accel_init(&hi2c1);
   /* USER CODE END 2 */
 
@@ -101,8 +104,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  //buffer for data
 	  float data[3] = {0};
+
+	  //if ready to get data
 	  if(!accel_get_data(data)){
+		  //print data
 		  sprintf(text,
 				  "x: %4.2f  y: %4.2f  z: %4.2f \r\n",
 				  data[0], data[1], data[2]);
