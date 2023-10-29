@@ -5,7 +5,9 @@
 #include "usbd_cdc_if.h"
 #include "lis331dlh_reg.h"
 
-void lis331dlh_read_data_polling(I2C_HandleTypeDef*);
+
+void accel_init(I2C_HandleTypeDef*);
+void accel_get_data(void);
 
 
 #endif /* INC_ACCEL_H_ */

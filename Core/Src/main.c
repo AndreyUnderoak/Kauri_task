@@ -91,14 +91,14 @@ int main(void)
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-
+  accel_init(&hi2c1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	lis331dlh_read_data_polling(&hi2c1);
+	  accel_get_data();
 
     /* USER CODE END WHILE */
 

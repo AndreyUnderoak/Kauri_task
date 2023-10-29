@@ -4,7 +4,7 @@ static int16_t data_raw_acceleration[3];
 static float acceleration_mg[3];
 static uint8_t whoamI;
 static uint8_t tx_buffer[1000];
-
+static stmdev_ctx_t dev_ctx;
 
 
 static int32_t platform_write(void *handle, uint8_t reg, const uint8_t *bufp,
@@ -28,10 +28,9 @@ static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp,
 }
 
 
-void lis331dlh_read_data_polling(I2C_HandleTypeDef * i2c_device)
-{
+void accel_init(I2C_HandleTypeDef * i2c_device){
   /* Initialize mems driver interface */
-  stmdev_ctx_t dev_ctx;
+
   dev_ctx.write_reg = platform_write;
   dev_ctx.read_reg = platform_read;
   dev_ctx.handle = i2c_device;
@@ -41,9 +40,9 @@ void lis331dlh_read_data_polling(I2C_HandleTypeDef * i2c_device)
   lis331dlh_device_id_get(&dev_ctx, &whoamI);
 
   if (whoamI != LIS331DLH_ID) {
-    while (1) {
-      /* manage here device not found */
-    }
+	while (1) {
+	  /* manage here device not found */
+	}
   }
 
   /* Enable Block Data Update */
@@ -58,6 +57,10 @@ void lis331dlh_read_data_polling(I2C_HandleTypeDef * i2c_device)
   /* Set Output Data Rate */
   lis331dlh_data_rate_set(&dev_ctx, LIS331DLH_ODR_5Hz);
 
+}
+
+void accel_get_data(void)
+{
   /* Read samples in polling mode (no int) */
   while (1) {
     /* Read output only if new value is available */
