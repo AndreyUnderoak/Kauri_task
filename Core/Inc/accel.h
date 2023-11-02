@@ -19,5 +19,7 @@ void accel_init(I2C_HandleTypeDef* i2c_device);
   */
 int accel_get_data(float* data);
 
+int accel_bytes2float(uint8_t * data, float * out);
+
 
 #endif /* INC_ACCEL_H_ */

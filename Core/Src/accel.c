@@ -82,3 +82,10 @@ int accel_get_data(float * data)
   return 0;
 }
 
+int accel_bytes2float(uint8_t * data, float * out){
+	out[0] = lis331dlh_from_fs2_to_mg((uint16_t)((data[1] * 256) + data[0]));
+	out[1] = lis331dlh_from_fs2_to_mg((uint16_t)((data[3] * 256) + data[2]));
+	out[2] = lis331dlh_from_fs2_to_mg((uint16_t)((data[5] * 256) + data[4]));
+	return 0;
+}
+

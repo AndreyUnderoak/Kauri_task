@@ -117,20 +117,26 @@ int main(void)
 
 	  if(CANSPI_Receive(&rxMessage))
 	  {
+		uint8_t data[6]        = {0};
+		float   data_float[3]  = {0};
 //		txMessage.frame.idType = rxMessage.frame.idType;
 //		txMessage.frame.id = rxMessage.frame.id;
 //		txMessage.frame.dlc = rxMessage.frame.dlc;
 //		txMessage.frame.data0++;
-//		txMessage.frame.data1 = rxMessage.frame.data1;
-//		txMessage.frame.data2 = rxMessage.frame.data2;
-//		txMessage.frame.data3 = rxMessage.frame.data3;
-//		txMessage.frame.data4 = rxMessage.frame.data4;
-//		txMessage.frame.data5 = rxMessage.frame.data5;
+		data[0] = rxMessage.frame.data0;
+		data[1] = rxMessage.frame.data1;
+		data[2] = rxMessage.frame.data2;
+		data[3] = rxMessage.frame.data3;
+		data[4] = rxMessage.frame.data4;
+		data[5] = rxMessage.frame.data5;
 //		txMessage.frame.data6 = rxMessage.frame.data6;
 //		txMessage.frame.data7 = rxMessage.frame.data7;
+
+		accel_bytes2float(data, data_float);
+
 		sprintf(text,
-				  "x: %X  y: %X  z: %X \r\n",
-				  rxMessage.frame.data1, rxMessage.frame.data2, rxMessage.frame.data3);
+				  "x: %4.2f  y: %4.2f  z: %4.2f \r\n",
+				  data_float[0], data_float[1], data_float[2]);
 		  CDC_Transmit_FS(text, sizeof(text));
 //		CANSPI_Transmit(&txMessage);
 	  }
