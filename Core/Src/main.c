@@ -18,13 +18,17 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "i2c.h"
+#include "spi.h"
 #include "usb_device.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "string.h"
 #include "usbd_cdc_if.h"
 #include "accel.h"
+#include "CANSPI.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +46,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
 
@@ -50,14 +53,16 @@ I2C_HandleTypeDef hi2c1;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+uCAN_MSG rxMessage;
+
+
 
 /* USER CODE END 0 */
 
@@ -91,31 +96,73 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
-  //text buffer
-  char text[100] = {0};
 
-  //init of sensor
-  accel_init(&hi2c1);
+
+
+
+//  //text buffer
+  char text[100] = {0};
+  CANSPI_Initialize();
+//init of sensor
+//  accel_init(&hi2c1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //buffer for data
-	  float data[3] = {0};
 
-	  //if ready to get data
-	  if(!accel_get_data(data)){
-		  //print data
-		  sprintf(text,
-				  "x: %4.2f  y: %4.2f  z: %4.2f \r\n",
-				  data[0], data[1], data[2]);
+	  if(CANSPI_Receive(&rxMessage))
+	  {
+//		txMessage.frame.idType = rxMessage.frame.idType;
+//		txMessage.frame.id = rxMessage.frame.id;
+//		txMessage.frame.dlc = rxMessage.frame.dlc;
+//		txMessage.frame.data0++;
+//		txMessage.frame.data1 = rxMessage.frame.data1;
+//		txMessage.frame.data2 = rxMessage.frame.data2;
+//		txMessage.frame.data3 = rxMessage.frame.data3;
+//		txMessage.frame.data4 = rxMessage.frame.data4;
+//		txMessage.frame.data5 = rxMessage.frame.data5;
+//		txMessage.frame.data6 = rxMessage.frame.data6;
+//		txMessage.frame.data7 = rxMessage.frame.data7;
+		sprintf(text,
+				  "x: %X  y: %X  z: %X \r\n",
+				  rxMessage.frame.data1, rxMessage.frame.data2, rxMessage.frame.data3);
 		  CDC_Transmit_FS(text, sizeof(text));
+//		CANSPI_Transmit(&txMessage);
 	  }
-	/* USER CODE END WHILE */
+
+/*	  txMessage.frame.idType = dSTANDARD_CAN_MSG_ID_2_0B;
+	  txMessage.frame.id = 0x0A;
+	  txMessage.frame.dlc = 8;
+	  txMessage.frame.data0 = 0;
+	  txMessage.frame.data1 = 1;
+	  txMessage.frame.data2 = 2;
+	  txMessage.frame.data3 = 3;
+	  txMessage.frame.data4 = 4;
+	  txMessage.frame.data5 = 5;
+	  txMessage.frame.data6 = 6;
+	  txMessage.frame.data7 = 7;
+	  CANSPI_Transmit(&txMessage);
+*/
+
+	  HAL_Delay(1000);
+
+//	  //buffer for data
+//	  float data[3] = {0};
+//
+//	  //if ready to get data
+//	  if(!accel_get_data(data)){
+//		  //print data
+//		  sprintf(text,
+//				  "x: %4.2f  y: %4.2f  z: %4.2f \r\n",
+//				  data[0], data[1], data[2]);
+//		  CDC_Transmit_FS(text, sizeof(text));
+//	  }
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -166,55 +213,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C1_Init(void)
-{
-
-  /* USER CODE BEGIN I2C1_Init 0 */
-
-  /* USER CODE END I2C1_Init 0 */
-
-  /* USER CODE BEGIN I2C1_Init 1 */
-
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C1_Init 2 */
-
-  /* USER CODE END I2C1_Init 2 */
-
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
 }
 
 /* USER CODE BEGIN 4 */
