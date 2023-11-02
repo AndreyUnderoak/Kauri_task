@@ -19,6 +19,13 @@ void accel_init(I2C_HandleTypeDef* i2c_device);
   */
 int accel_get_data(float* data);
 
+/**
+  * @brief  Transform raw data array to float xyz
+  *
+  * @param  data[6](uint8_t ptr)  to data buffer in  float[3](ptr)
+  * @param  out[3](float ptr)  output xyz  float[3](ptr)
+  * @retval       interface status 0->everything good
+  */
 int accel_bytes2float(uint8_t * data, float * out);
 
 

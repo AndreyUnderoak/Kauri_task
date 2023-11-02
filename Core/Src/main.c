@@ -62,8 +62,6 @@ void SystemClock_Config(void);
 
 uCAN_MSG rxMessage;
 
-
-
 /* USER CODE END 0 */
 
 /**
@@ -99,15 +97,9 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
-
-
-
-
-//  //text buffer
+   //text buffer
   char text[100] = {0};
   CANSPI_Initialize();
-//init of sensor
-//  accel_init(&hi2c1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -119,18 +111,12 @@ int main(void)
 	  {
 		uint8_t data[6]        = {0};
 		float   data_float[3]  = {0};
-//		txMessage.frame.idType = rxMessage.frame.idType;
-//		txMessage.frame.id = rxMessage.frame.id;
-//		txMessage.frame.dlc = rxMessage.frame.dlc;
-//		txMessage.frame.data0++;
 		data[0] = rxMessage.frame.data0;
 		data[1] = rxMessage.frame.data1;
 		data[2] = rxMessage.frame.data2;
 		data[3] = rxMessage.frame.data3;
 		data[4] = rxMessage.frame.data4;
 		data[5] = rxMessage.frame.data5;
-//		txMessage.frame.data6 = rxMessage.frame.data6;
-//		txMessage.frame.data7 = rxMessage.frame.data7;
 
 		accel_bytes2float(data, data_float);
 
@@ -138,36 +124,8 @@ int main(void)
 				  "x: %4.2f  y: %4.2f  z: %4.2f \r\n",
 				  data_float[0], data_float[1], data_float[2]);
 		  CDC_Transmit_FS(text, sizeof(text));
-//		CANSPI_Transmit(&txMessage);
 	  }
 
-/*	  txMessage.frame.idType = dSTANDARD_CAN_MSG_ID_2_0B;
-	  txMessage.frame.id = 0x0A;
-	  txMessage.frame.dlc = 8;
-	  txMessage.frame.data0 = 0;
-	  txMessage.frame.data1 = 1;
-	  txMessage.frame.data2 = 2;
-	  txMessage.frame.data3 = 3;
-	  txMessage.frame.data4 = 4;
-	  txMessage.frame.data5 = 5;
-	  txMessage.frame.data6 = 6;
-	  txMessage.frame.data7 = 7;
-	  CANSPI_Transmit(&txMessage);
-*/
-
-	  HAL_Delay(1000);
-
-//	  //buffer for data
-//	  float data[3] = {0};
-//
-//	  //if ready to get data
-//	  if(!accel_get_data(data)){
-//		  //print data
-//		  sprintf(text,
-//				  "x: %4.2f  y: %4.2f  z: %4.2f \r\n",
-//				  data[0], data[1], data[2]);
-//		  CDC_Transmit_FS(text, sizeof(text));
-//	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
